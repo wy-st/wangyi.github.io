@@ -1,0 +1,895 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yi Wang - GeoAI Researcher</title>
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@300;400;600;700&family=IBM+Plex+Mono:wght@300;400;500&family=Playfair+Display:wght@700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #1a1a2e;
+            --secondary: #16213e;
+            --accent: #e94560;
+            --accent-light: #ff6b85;
+            --text: #f8f9fa;
+            --text-muted: #adb5bd;
+            --bg: #0f0f1e;
+            --bg-card: #1a1a2e;
+            --border: rgba(233, 69, 96, 0.2);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Crimson Pro', serif;
+            background: var(--bg);
+            color: var(--text);
+            line-height: 1.7;
+            overflow-x: hidden;
+        }
+
+        /* Animated background */
+        body::before {
+            content: '';
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 20% 50%, rgba(233, 69, 96, 0.05) 0%, transparent 50%),
+                radial-gradient(circle at 80% 80%, rgba(22, 33, 62, 0.3) 0%, transparent 50%),
+                radial-gradient(circle at 40% 20%, rgba(233, 69, 96, 0.03) 0%, transparent 50%);
+            z-index: -1;
+            animation: bgFloat 20s ease-in-out infinite;
+        }
+
+        @keyframes bgFloat {
+            0%, 100% { opacity: 1; transform: scale(1); }
+            50% { opacity: 0.8; transform: scale(1.1); }
+        }
+
+        /* Navigation */
+        nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(15, 15, 30, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 1000;
+            border-bottom: 1px solid var(--border);
+        }
+
+        .nav-container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .nav-brand {
+            font-family: 'Playfair Display', serif;
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--accent);
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+        }
+
+        .nav-links a {
+            color: var(--text-muted);
+            text-decoration: none;
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .nav-links a:hover,
+        .nav-links a.active {
+            color: var(--accent);
+        }
+
+        /* Page */
+        .page {
+            display: none;
+            min-height: 100vh;
+            padding-top: 80px;
+        }
+
+        .page.active {
+            display: block;
+        }
+
+        /* Header */
+        header {
+            padding: 4rem 2rem 3rem;
+            text-align: center;
+            border-bottom: 1px solid var(--border);
+            background: linear-gradient(180deg, var(--secondary) 0%, transparent 100%);
+            animation: fadeInDown 1s ease-out;
+        }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .page-header {
+            text-align: center;
+            padding: 3rem 2rem 2rem;
+            border-bottom: 1px solid var(--border);
+            margin-bottom: 3rem;
+        }
+
+        .page-title {
+            font-family: 'Playfair Display', serif;
+            font-size: 3rem;
+            color: var(--accent);
+            margin-bottom: 1rem;
+        }
+
+        h1 {
+            font-family: 'Playfair Display', serif;
+            font-size: clamp(2.5rem, 6vw, 4.5rem);
+            font-weight: 900;
+            color: var(--text);
+            margin-bottom: 0.5rem;
+            letter-spacing: -0.02em;
+            background: linear-gradient(135deg, var(--text) 0%, var(--accent-light) 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .subtitle {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 1rem;
+            color: var(--accent);
+            text-transform: uppercase;
+            letter-spacing: 0.15em;
+            margin-bottom: 1.5rem;
+            font-weight: 500;
+        }
+
+        .contact-info {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 1.5rem;
+            margin-top: 2rem;
+            font-size: 0.95rem;
+            color: var(--text-muted);
+        }
+
+        .contact-info a {
+            color: var(--text-muted);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            padding: 0.3rem 0.8rem;
+            border-radius: 4px;
+            border: 1px solid transparent;
+        }
+
+        .contact-info a:hover {
+            color: var(--accent);
+            border-color: var(--accent);
+            transform: translateY(-2px);
+        }
+
+        /* Container */
+        .container {
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        /* Section */
+        section {
+            margin: 4rem 0;
+            animation: fadeInUp 0.8s ease-out backwards;
+        }
+
+        section:nth-child(1) { animation-delay: 0.1s; }
+        section:nth-child(2) { animation-delay: 0.2s; }
+        section:nth-child(3) { animation-delay: 0.3s; }
+        section:nth-child(4) { animation-delay: 0.4s; }
+        section:nth-child(5) { animation-delay: 0.5s; }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(30px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        h2 {
+            font-family: 'Playfair Display', serif;
+            font-size: 2.2rem;
+            margin-bottom: 2rem;
+            color: var(--accent);
+            position: relative;
+            display: inline-block;
+            font-weight: 700;
+        }
+
+        h2::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 0;
+            width: 60px;
+            height: 3px;
+            background: linear-gradient(90deg, var(--accent) 0%, transparent 100%);
+        }
+
+        /* Education & Experience */
+        .timeline-item {
+            margin-bottom: 2.5rem;
+            padding-left: 2rem;
+            border-left: 2px solid var(--border);
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -6px;
+            top: 0;
+            width: 10px;
+            height: 10px;
+            background: var(--accent);
+            border-radius: 50%;
+            box-shadow: 0 0 0 4px var(--bg-card);
+        }
+
+        .timeline-item:hover {
+            border-left-color: var(--accent);
+        }
+
+        .timeline-item:hover::before {
+            box-shadow: 0 0 0 4px var(--bg-card), 0 0 20px var(--accent);
+        }
+
+        .timeline-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 0.5rem;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .timeline-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+            color: var(--text);
+        }
+
+        .timeline-date {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.85rem;
+            color: var(--accent);
+            font-weight: 500;
+        }
+
+        .timeline-subtitle {
+            font-size: 1.05rem;
+            color: var(--text-muted);
+            margin-bottom: 0.3rem;
+        }
+
+        .timeline-location {
+            font-size: 0.9rem;
+            color: var(--text-muted);
+            font-style: italic;
+        }
+
+        .supervisor {
+            margin-top: 0.5rem;
+            font-size: 0.95rem;
+            color: var(--text-muted);
+        }
+
+        /* Research Interests */
+        .interests-list {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .interest-tag {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            padding: 0.8rem 1.5rem;
+            border-radius: 50px;
+            font-size: 1rem;
+            color: var(--text);
+            transition: all 0.3s ease;
+            cursor: default;
+        }
+
+        .interest-tag:hover {
+            background: var(--accent);
+            border-color: var(--accent);
+            transform: translateY(-3px) scale(1.05);
+            box-shadow: 0 10px 30px rgba(233, 69, 96, 0.3);
+        }
+
+        /* Publications */
+        .publication {
+            margin-bottom: 2rem;
+            padding: 1.5rem;
+            background: var(--bg-card);
+            border-radius: 8px;
+            border-left: 3px solid var(--accent);
+            transition: all 0.3s ease;
+        }
+
+        .publication:hover {
+            transform: translateX(8px);
+            box-shadow: -5px 5px 20px rgba(233, 69, 96, 0.2);
+        }
+
+        .pub-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text);
+            margin-bottom: 0.5rem;
+            line-height: 1.5;
+        }
+
+        .pub-authors {
+            font-size: 0.95rem;
+            color: var(--text-muted);
+            margin-bottom: 0.5rem;
+        }
+
+        .pub-venue {
+            font-size: 0.9rem;
+            color: var(--accent);
+            font-style: italic;
+        }
+
+        .pub-status {
+            display: inline-block;
+            margin-left: 0.5rem;
+            padding: 0.2rem 0.6rem;
+            background: rgba(233, 69, 96, 0.2);
+            border-radius: 4px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            text-transform: uppercase;
+        }
+
+        /* Awards & Honors */
+        .awards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-top: 1.5rem;
+        }
+
+        .award-card {
+            background: var(--bg-card);
+            border: 1px solid var(--border);
+            padding: 1.5rem;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+        }
+
+        .award-card:hover {
+            border-color: var(--accent);
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(233, 69, 96, 0.2);
+        }
+
+        .award-title {
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text);
+            margin-bottom: 0.5rem;
+        }
+
+        .award-date {
+            font-family: 'IBM Plex Mono', monospace;
+            font-size: 0.85rem;
+            color: var(--accent);
+        }
+
+        /* Services */
+        .services-section {
+            margin-top: 2rem;
+        }
+
+        .service-category {
+            margin-bottom: 2rem;
+        }
+
+        .service-category h3 {
+            font-size: 1.3rem;
+            color: var(--accent-light);
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+
+        .service-list {
+            list-style: none;
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 0.8rem;
+        }
+
+        .service-list li {
+            padding: 0.6rem 1rem;
+            background: var(--bg-card);
+            border-radius: 6px;
+            border-left: 2px solid var(--accent);
+            font-size: 0.95rem;
+            transition: all 0.3s ease;
+        }
+
+        .service-list li:hover {
+            background: var(--secondary);
+            transform: translateX(5px);
+        }
+
+        /* Footer */
+        footer {
+            text-align: center;
+            padding: 3rem 2rem;
+            margin-top: 5rem;
+            border-top: 1px solid var(--border);
+            color: var(--text-muted);
+            font-size: 0.9rem;
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .nav-links {
+                gap: 1rem;
+                font-size: 0.8rem;
+            }
+
+            h1 {
+                font-size: 2.5rem;
+            }
+
+            h2 {
+                font-size: 1.8rem;
+            }
+
+            .page-title {
+                font-size: 2rem;
+            }
+
+            .timeline-header {
+                flex-direction: column;
+            }
+
+            .contact-info {
+                flex-direction: column;
+                align-items: center;
+            }
+
+            .awards-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .service-list {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Scroll animation trigger */
+        .reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: all 0.6s ease-out;
+        }
+
+        .reveal.active {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav>
+        <div class="nav-container">
+            <div class="nav-brand">Yi Wang</div>
+            <div class="nav-links">
+                <a href="#" data-page="home" class="nav-link active">Home</a>
+                <a href="#" data-page="publications" class="nav-link">Publications</a>
+                <a href="#" data-page="other" class="nav-link">Other</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- HOME PAGE -->
+    <div id="home" class="page active">
+        <header>
+            <h1>Yi Wang</h1>
+            <p style="font-size: 1.1rem; color: var(--text-muted); margin-top: 1rem; max-width: 800px; margin-left: auto; margin-right: auto;">
+                Institute of Remote Sensing and Geographic Information Systems<br>
+                Peking University
+            </p>
+            <div class="contact-info">
+                <a href="mailto:wang.yi@stu.pku.edu.cn">📧 wang.yi@stu.pku.edu.cn</a>
+                <a href="https://scholar.google.com/citations?user=TkXwdu0AAAAJ&hl=zh-CN&oi=sra" target="_blank">🎓 Google Scholar</a>
+                <a href="https://orcid.org/0000-0002-3549-2960" target="_blank">🆔 ORCID</a>
+            </div>
+        </header>
+
+        <div class="container">
+            <!-- Education -->
+            <section id="education">
+                <h2>Education</h2>
+                
+                <div class="timeline-item">
+                    <div class="timeline-header">
+                        <div class="timeline-title">Peking University</div>
+                        <div class="timeline-date">Sep 2022 - Jun 2026 (Expected)</div>
+                    </div>
+                    <div class="timeline-subtitle">Ph.D. in Cartography and Geographic Information System</div>
+                    <div class="timeline-location">Beijing, China</div>
+                    <div class="supervisor">Supervisors: Yu Liu, Fan Zhang, and Shanjun Mao</div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-header">
+                        <div class="timeline-title">Agency for Science, Technology and Research</div>
+                        <div class="timeline-date">Jul 2025 - Jan 2026</div>
+                    </div>
+                    <div class="timeline-subtitle">Visiting Student in Artificial Intelligence</div>
+                    <div class="timeline-location">Singapore</div>
+                    <div class="supervisor">Supervisors: Ivor W. Tsang and Jing Li</div>
+                </div>
+            </section>
+
+            <!-- Research Interests -->
+            <section id="research">
+                <h2>Research Interests</h2>
+                <div class="interests-list">
+                    <div class="interest-tag">Geo-Spatial Artificial Intelligence</div>
+                    <div class="interest-tag">Spatio-Temporal Data Mining</div>
+                    <div class="interest-tag">Social Sensing</div>
+                </div>
+            </section>
+
+            <!-- Biography -->
+            <section id="biography">
+                <h2>Biography</h2>
+                <p style="font-size: 1.05rem; line-height: 1.8; color: var(--text); text-align: justify;">
+                    Yi Wang is currently a Ph.D. candidate at the Institute of Remote Sensing and Geographic Information Systems, School of Earth and Space Sciences, Peking University, under the supervision of Prof. Yu Liu, Prof. Fan Zhang, and Prof. Shanjun Mao. During his doctoral studies, he visited the Centre for Frontier AI Research at the Agency for Science, Technology and Research in Singapore, collaborating with Prof. Ivor W. Tsang and Dr. Jing Li. His primary research interests include Geo-Spatial Artificial Intelligence, Spatio-Temporal Data Mining, and Social Sensing.
+                </p>
+                <p style="font-size: 1.05rem; line-height: 1.8; color: var(--text); text-align: justify; margin-top: 1rem;">
+                    Yi Wang has served as the Principal Investigator for the National Natural Science Foundation of China Youth Student Basic Research Project (Ph.D. Student). He has been honored with the National Scholarship, Leo KoGuan Scholarship, and Lin Chao Geography Scholarship, among other awards. He was also selected as a "Rising Star in GIS" (Rank 1) at the College GIS Forums of China. To date, he has published 17 SCI papers, including 10 as first author, with 3 papers recognized as ESI 1% highly cited papers. His research has been published in prestigious international journals in the fields of geographic information systems and artificial intelligence, including IEEE TPAMI, ISPRS JPRS, IEEE TITS, IEEE TGRS, and Information Fusion. In terms of academic service, he has served as a Program Committee Member for ACM SIGSPATIAL conferences and has provided peer review services for over 20 renowned international journals and conferences in the fields of geography and spatiotemporal modeling, including IEEE TPAMI, ISPRS JPRS, Transportation Research Part E, IEEE TAI, and Pattern Recognition.
+                </p>
+            </section>
+
+            <!-- Selected Publications -->
+            <section id="selected-publications">
+                <h2>Selected Publications</h2>
+                
+                <div class="publication">
+                    <div class="pub-title">A Gravity-informed Spatiotemporal Transformer for Human Activity Intensity Prediction</div>
+                    <div class="pub-authors">Wang, Y., Wang, Z., Zhang, F., Kang, C., Ruan, S., Zhu, D., Tang, C., Ma, Z., Zhang, W., Zheng, Y., Yu, PS., Liu, Y.</div>
+                    <div class="pub-venue">IEEE Transactions on Pattern Analysis and Machine Intelligence (2025), 1-18</div>
+                </div>
+
+                <div class="publication">
+                    <div class="pub-title">A Multi-view Graph Neural Network for Building Age Prediction</div>
+                    <div class="pub-authors">Wang, Y., Zhang, Y., Dong, Q., Guo, H., Tao, Y., Zhang, F.</div>
+                    <div class="pub-venue">ISPRS Journal of Photogrammetry and Remote Sensing (2024), 218, 294-311</div>
+                </div>
+
+                <div class="publication">
+                    <div class="pub-title">TTSR: A Transformer-based Topography Neural Network for Digital Elevation Model Super Resolution</div>
+                    <div class="pub-authors">Wang, Y., Jin, S., Yang, Z., Guan, H., Ren, Y., Cheng, K., Zhao, X., Liu, X., Chen, M., Liu, Y., Guo, Q.</div>
+                    <div class="pub-venue">IEEE Transactions on Geoscience and Remote Sensing (2024), 62, 4403719-4403738</div>
+                </div>
+
+                <div class="publication">
+                    <div class="pub-title">A Hypergraph-based Hybrid Graph Convolutional Network for Intracity Human Activity Intensity Prediction and Geographic Relationship Interpretation</div>
+                    <div class="pub-authors">Wang, Y., Zhu, D.</div>
+                    <div class="pub-venue">Information Fusion (2024), 104, 102149</div>
+                </div>
+
+                <div class="publication">
+                    <div class="pub-title">Adaptive Spatiotemporal InceptionNet for Traffic Flow Forecasting</div>
+                    <div class="pub-authors">Wang, Y., Jing, C., Huang, W., Jin, S., & Lv, X.</div>
+                    <div class="pub-venue">IEEE Transactions on Intelligent Transportation Systems (2023), 24(4), 3882-3907</div>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <!-- PUBLICATIONS PAGE -->
+    <div id="publications" class="page">
+        <div class="page-header">
+            <h1 class="page-title">Publications</h1>
+            <p style="color: var(--text-muted); font-size: 1.1rem;">Complete list of published works</p>
+        </div>
+
+        <div class="container">
+            <section>
+                <div class="publication">
+                    <div class="pub-title">1. A Gravity-informed Spatiotemporal Transformer for Human Activity Intensity Prediction</div>
+                    <div class="pub-authors">Wang, Y., Wang, Z., Zhang, F., Kang, C., Ruan, S., Zhu, D., Tang, C., Ma, Z., Zhang, W., Zheng, Y., Yu, PS., Liu, Y.</div>
+                    <div class="pub-venue">IEEE Transactions on Pattern Analysis and Machine Intelligence (2025), 1-18</div>
+                </div>
+
+                <div class="publication">
+                    <div class="pub-title">2. A Multi-view Graph Neural Network for Building Age Prediction</div>
+                    <div class="pub-authors">Wang, Y., Zhang, Y., Dong, Q., Guo, H., Tao, Y., Zhang, F.</div>
+                    <div class="pub-venue">ISPRS Journal of Photogrammetry and Remote Sensing (2024), 218, 294-311</div>
+                </div>
+
+                <div class="publication">
+                    <div class="pub-title">3. TTSR: A Transformer-based Topography Neural Network for Digital Elevation Model Super Resolution</div>
+                    <div class="pub-authors">Wang, Y., Jin, S., Yang, Z., Guan, H., Ren, Y., Cheng, K., Zhao, X., Liu, X., Chen, M., Liu, Y., Guo, Q.</div>
+                    <div class="pub-venue">IEEE Transactions on Geoscience and Remote Sensing (2024), 62, 4403719-4403738</div>
+                </div>
+
+                <div class="publication">
+                    <div class="pub-title">4. A Hypergraph-based Hybrid Graph Convolutional Network for Intracity Human Activity Intensity Prediction and Geographic Relationship Interpretation</div>
+                    <div class="pub-authors">Wang, Y., Zhu, D.</div>
+                    <div class="pub-venue">Information Fusion (2024), 104, 102149</div>
+                </div>
+
+                <div class="publication">
+                    <div class="pub-title">5. Adaptive Spatiotemporal InceptionNet for Traffic Flow Forecasting</div>
+                    <div class="pub-authors">Wang, Y., Jing, C., Huang, W., Jin, S., & Lv, X.</div>
+                    <div class="pub-venue">IEEE Transactions on Intelligent Transportation Systems (2023), 24(4), 3882-3907</div>
+                </div>
+
+                <div class="publication">
+                    <div class="pub-title">6. SHGCN: a hypergraph-based deep learning model for spatiotemporal traffic flow prediction</div>
+                    <div class="pub-authors">Wang, Y., & Zhu, D.</div>
+                    <div class="pub-venue">Proceedings of the 5th ACM SIGSPATIAL International Workshop on AI for Geographic Knowledge Discovery (2022), 30-39</div>
+                </div>
+
+                <div class="publication">
+                    <div class="pub-title">7. Attention based spatiotemporal graph attention networks for traffic flow forecasting</div>
+                    <div class="pub-authors">Wang, Y., Jing, C., Xu, S., & Guo, T.</div>
+                    <div class="pub-venue">Information Sciences (2022), 607, 869-883</div>
+                </div>
+
+                <div class="publication">
+                    <div class="pub-title">8. Spatiotemporal graph convolutional network for multi-scale traffic forecasting</div>
+                    <div class="pub-authors">Wang, Y., & Jing, C.</div>
+                    <div class="pub-venue">ISPRS International Journal of Geo-Information (2022), 11(2), 102</div>
+                </div>
+
+                <div class="publication">
+                    <div class="pub-title">9. Learning from leading indicators to predict long-term dynamics of hourly electricity generation from multiple resources</div>
+                    <div class="pub-authors">Wang, Z., Wang, Y., Jia, F., Zhang, F., Klimenko, N., Wang, L., He, Z., Huang, Z., & Liu, Y.</div>
+                    <div class="pub-venue">Neural Networks (2025), 186, 107268</div>
+                </div>
+
+                <div class="publication">
+                    <div class="pub-title">10. Spatiotemporal Fusion Transformer for large-scale traffic forecasting</div>
+                    <div class="pub-authors">Wang, Z., Wang, Y., Jia, F., Zhang, F., Klimenko, N., Wang, L., He, Z., Huang, Z., & Liu, Y.</div>
+                    <div class="pub-venue">Information Fusion (2024), 107, 102293</div>
+                </div>
+
+                <div class="publication">
+                    <div class="pub-title">11. Spatiotemporal Fusion Transformer for large-scale traffic forecasting</div>
+                    <div class="pub-authors">Li, Y., Wang, Y., Shi, S., Wang, J., Wang, R., Lu, M., & Zhang, F.</div>
+                    <div class="pub-venue">Neural Networks (2025), 185, 107226</div>
+                </div>
+
+                <div class="publication">
+                    <div class="pub-title">12. PhenoSR: A semantic-aware super-resolution network for flexible reconstruction of RGB images from UAV</div>
+                    <div class="pub-authors">Zhang, R., Jin, S., Wang, Y., Zhang, J., Yao, J., Wang, Y., Zhao, R., Su, Y., Wu. J., Wang, X., Jiang, D.</div>
+                    <div class="pub-venue">ISPRS Journal of Photogrammetry and Remote Sensing (2025), 228, 582-602</div>
+                </div>
+
+                <div class="publication">
+                    <div class="pub-title">13. A Deep Multi-scale Neural Networks for Crime Hotspot Mapping Prediction</div>
+                    <div class="pub-authors">Lv, X., Jing, C., Wang, Y., Qin, M., Jin, S., Wu, S., & Xu, G.</div>
+                    <div class="pub-venue">Computers, Environment and Urban Systems (2024), 109, 102089</div>
+                </div>
+
+                <div class="publication">
+                    <div class="pub-title">14. Efficient large-scale vegetation mapping at the formation level using multi-source data: A case study in Beijing, China</div>
+                    <div class="pub-authors">Xu, J., Huang, Y., Cheng, K., Wang, Y., Hu, T., Guan, H., Chen, Y., Ren, Y., Chen, M., Yang, Z., Wang J., & Guo, Q.</div>
+                    <div class="pub-venue">ISPRS Journal of Photogrammetry and Remote Sensing (2025), 225, 36-51</div>
+                </div>
+
+                <div class="publication">
+                    <div class="pub-title">15. A Transformer-based Multi-modal Model for Urban-Rural Fringe Identification</div>
+                    <div class="pub-authors">Jia, F., Dong, Q., Huang, Z., Chen, X. J., Wang, Y., Peng, X., Guo, Y., Ma, R., Zhang, F., & Liu, Y.</div>
+                    <div class="pub-venue">IEEE Journal of Selected Topics in Applied Earth Observations and Remote Sensing (2024), 17, 15041-15051</div>
+                </div>
+
+                <div class="publication">
+                    <div class="pub-title">16. A Lightweight Multi-layer Perceptron for Efficient Multivariate Time-series Forecasting</div>
+                    <div class="pub-authors">Wang, Z., Ruan, S., Huang, T., Zhou, H., Zhang, S., Wang, Y., Wang, L., Huang, Z., & Liu, Y.</div>
+                    <div class="pub-venue">Knowledge-Based Systems (2024), 288, 111463</div>
+                </div>
+
+                <div class="publication">
+                    <div class="pub-title">17. A Deep Neural Network for Spatiotemporal Prediction of Theft Crimes</div>
+                    <div class="pub-authors">Lv, X., Jing, C., Wang, Y., & Jin, S.</div>
+                    <div class="pub-venue">The International Archives of the Photogrammetry, Remote Sensing and Spatial Information Sciences (2022), 48, 35-41</div>
+                </div>
+
+                <div class="publication">
+                    <div class="pub-title">18. Spatiotemporal graph convolutional neural networks for metro flow prediction</div>
+                    <div class="pub-authors">Jin, S., Jing, C., Wang, Y., & Lv, X.</div>
+                    <div class="pub-venue">The International Archives of the Photogrammetry, Remote Sensing and Spatial Information Sciences (2022), 43, 403-409</div>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <!-- OTHER PAGE -->
+    <div id="other" class="page">
+        <div class="page-header">
+            <h1 class="page-title">Honors & Services</h1>
+            <p style="color: var(--text-muted); font-size: 1.1rem;">Awards, funding, and academic contributions</p>
+        </div>
+
+        <div class="container">
+
+        <div class="container">
+            <!-- Honors & Awards -->
+            <section id="honors">
+                <h2>Honors & Awards</h2>
+                
+                <div class="awards-grid">
+                    <div class="award-card">
+                        <div class="award-title">Rising Star Award</div>
+                        <div class="award-date">College GIS Forums of China, 2025.10</div>
+                    </div>
+                    
+                    <div class="award-card">
+                        <div class="award-title">Leo KoGuan Scholarship</div>
+                        <div class="award-date">2025.9</div>
+                    </div>
+                    
+                    <div class="award-card">
+                        <div class="award-title">National Scholarship</div>
+                        <div class="award-date">2024.9</div>
+                    </div>
+                    
+                    <div class="award-card">
+                        <div class="award-title">Lin Chao Geography Scholarship</div>
+                        <div class="award-date">2023.9</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Academic Services -->
+            <section id="services">
+                <h2>Academic Services</h2>
+                
+                <div class="services-section">
+                    <div class="service-category">
+                        <h3>Journal Reviewer</h3>
+                        <ul class="service-list">
+                            <li>IEEE Transactions on Pattern Analysis and Machine Intelligence</li>
+                            <li>ISPRS Journal of Photogrammetry and Remote Sensing</li>
+                            <li>Transportation Research Part E: Logistics and Transportation Review</li>
+                            <li>IEEE Transactions on Artificial Intelligence</li>
+                            <li>Neural Networks</li>
+                            <li>Knowledge-Based Systems</li>
+                            <li>Information Sciences</li>
+                            <li>Expert Systems with Applications</li>
+                            <li>Pattern Recognition</li>
+                            <li>Process Safety and Environmental Protection</li>
+                            <li>iScience</li>
+                            <li>International Journal of Digital Earth</li>
+                            <li>IEEE Journal of Selected Topics in Applied Earth Observations and Remote Sensing</li>
+                            <li>Geo-spatial Information Science</li>
+                            <li>Spatial Statistics</li>
+                            <li>Scientific Reports</li>
+                            <li>Digital Signal Processing</li>
+                            <li>Computers and Electrical Engineering</li>
+                            <li>Cluster Computing</li>
+                            <li>International Journal of Computational Intelligence Systems</li>
+                        </ul>
+                    </div>
+
+                    <div class="service-category">
+                        <h3>Conference Reviewer</h3>
+                        <ul class="service-list">
+                            <li>IEEE International Conference on Robotics and Automation (ICRA)</li>
+                        </ul>
+                    </div>
+
+                    <div class="service-category">
+                        <h3>Program Committee Member</h3>
+                        <ul class="service-list">
+                            <li>ACM SIGSPATIAL International Workshop on AI for Geographic Knowledge Discovery</li>
+                        </ul>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Research Funding -->
+            <section id="funding">
+                <h2>Research Funding</h2>
+                
+                <div class="timeline-item">
+                    <div class="timeline-title">Prediction and Symbolic Interpretation for Multi-modal Spatiotemporal Interactions</div>
+                    <div class="timeline-subtitle">National Science Foundation of China Youth Student Basic Research Project (Ph.D. Student)</div>
+                    <div class="supervisor">Role: Project Leader | Status: Ongoing</div>
+                </div>
+            </section>
+        </div>
+    </div>
+
+    <footer>
+        <p>© 2025 Yi Wang. Last updated: December 2025</p>
+        <p style="margin-top: 0.5rem; font-size: 0.85rem;">Institute of Remote Sensing and GIS, Peking University</p>
+    </footer>
+
+    <script>
+        // Page navigation
+        const navLinks = document.querySelectorAll('.nav-link');
+        const pages = document.querySelectorAll('.page');
+
+        navLinks.forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const targetPage = link.getAttribute('data-page');
+
+                // Update active states
+                navLinks.forEach(l => l.classList.remove('active'));
+                link.classList.add('active');
+
+                // Show target page
+                pages.forEach(p => p.classList.remove('active'));
+                document.getElementById(targetPage).classList.add('active');
+
+                // Scroll to top
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            });
+        });
+
+        // Reveal on scroll animation
+        const revealElements = document.querySelectorAll('section');
+        
+        const revealOnScroll = () => {
+            revealElements.forEach(element => {
+                const elementTop = element.getBoundingClientRect().top;
+                const windowHeight = window.innerHeight;
+                
+                if (elementTop < windowHeight - 100) {
+                    element.classList.add('active');
+                }
+            });
+        };
+
+        window.addEventListener('scroll', revealOnScroll);
+        revealOnScroll(); // Initial check
+    </script>
+</body>
+</html>
